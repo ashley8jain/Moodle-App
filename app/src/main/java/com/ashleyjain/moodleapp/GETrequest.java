@@ -1,6 +1,5 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.android.volley.Request;
@@ -23,7 +22,7 @@ public class GETrequest {
                     public void onResponse(String response){
                         // Result handling
                         System.out.println(response.substring(0, 100));
-                        resp=response;
+                        resp = response;
                     }
                 },
                 new Response.ErrorListener() {
@@ -32,23 +31,12 @@ public class GETrequest {
                 // Error handling
                 System.out.println("Something went wrong!");
                 error.printStackTrace();
-
             }
         });
 
 // Add the request to the queue
         Volley.newRequestQueue(context).add(stringRequest);
-        ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-        while(resp!=null) {
-            break;
-        }
 
-        if(resp!=null){
-            dialog.dismiss();
-            System.out.println("true");
-        }
-        else
-            System.out.println("false");
         return resp;
     }
 

@@ -1,5 +1,7 @@
 package com.ashleyjain.moodleapp;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DashBoard extends AppCompatActivity {
+    final Context context = DashBoard.this;
 
     @Override
     public void onBackPressed() {
@@ -41,9 +44,6 @@ public class DashBoard extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,18 +65,41 @@ public class DashBoard extends AppCompatActivity {
             return true;
         }
         else if(id == R.id.action_mycourse){
-            //Intent intent = new Intent(this,myCourse.class);
-            //startActivity(intent);
+            final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+            String url = "http://10.192.43.84:8000/courses/list.json";
+            GETrequest.response(new GETrequest.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                        dialog.dismiss();
+                        System.out.println(result);
+                        Intent intent1 = new Intent(context, myCourse.class);
+                        intent1.putExtra("courselist",result);
+                        startActivity(intent1);
+                }
+            }, context, url, dialog);
+
+
             return true;
         }
         else if(id == R.id.action_profile){
+
             return true;
         }
         else if(id == R.id.action_password){
             return true;
         }
         else if(id == R.id.action_logout){
-
+            final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+            String url = "http://10.192.43.84:8000/default/logout.json";
+            GETrequest.response(new GETrequest.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    dialog.dismiss();
+                    System.out.println(result);
+                    Intent intent1 = new Intent(context,MainActivity.class);
+                    startActivity(intent1);
+                }
+            }, context, url, dialog);
             return true;
         }
 

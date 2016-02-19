@@ -6,9 +6,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,14 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,13 +33,26 @@ public class MainActivity extends AppCompatActivity {
     Button login;
     TextView signup;
 
+    private static final String SET_COOKIE_KEY = "set-cookie";
+    private static final String COOKIE_KEY = "cookie";
+    private static final String SESSION_COOKIE = "session_id_moodleplus";
 
+    private static MainActivity _instance;
+    private RequestQueue _requestQueue;
+    private SharedPreferences _preferences;
+
+    public static MainActivity get() {
+        return _instance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Context context = MainActivity.this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        _instance = this;
+        _preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        _requestQueue = Volley.newRequestQueue(this);
 
         id = (EditText) findViewById(R.id.userid);
         pass = (EditText) findViewById(R.id.password);
@@ -59,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isNetworkConnected(context)){
+                if (!isNetworkConnected(context)) {
                     AlertDialog.Builder alertbuilder = new AlertDialog.Builder(context);
                     alertbuilder.setTitle("No Network Connection");
                     alertbuilder.setCancelable(true);
-                    alertbuilder.setPositiveButton("Go to wifi settings",new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
+                    alertbuilder.setPositiveButton("Go to wifi settings", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
                             Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             context.startActivity(intent);
@@ -72,50 +86,35 @@ public class MainActivity extends AppCompatActivity {
                     });
                     AlertDialog alertDialog = alertbuilder.create();
                     alertDialog.show();
-                }
-                else {
-                    final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+                } else {
+                    final ProgressDialog dialog = ProgressDialog.show(context,"", "Loading.Please wait...", true);
                     username[0] = id.getText().toString();
                     password[0] = pass.getText().toString();
                     String url = "http://10.192.43.84:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
-                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                            new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String response) {
-                                    // Result handling
-                                    dialog.dismiss();
-                                    System.out.println(response.toString());
-                                    try {
-                                        JSONObject jsonObject = new JSONObject(response);
-                                        String success = jsonObject.getString("success");
-                                        if (success == "false") {
-                                            Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Intent intent = new Intent(context, DashBoard.class);
-                                            intent.putExtra("response", response);
-                                            startActivity(intent);
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                    GETrequest.response(new GETrequest.VolleyCallback() {
+                        @Override
+                        public void onSuccess(String result) {
+                            dialog.dismiss();
+                            try {
+                                JSONObject jsonObject = new JSONObject(result);
+                                String success = jsonObject.getString("success");
+                                if (success == "false") {
+                                    Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Intent intent = new Intent(context, DashBoard.class);
+                                    intent.putExtra("response", result);
+                                    startActivity(intent);
                                 }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-                                    // Error handling
-                                    System.out.println("Something went wrong!");
-                                    dialog.dismiss();
-                                    error.printStackTrace();
-                                    Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-// Add the request to the queue
-                    Volley.newRequestQueue(context).add(stringRequest);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, context, url, dialog);
                 }
             }
         });
+
+
 
     }
 
@@ -138,4 +137,41 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
     }
+    public final void checkSessionCookie(Map<String, String> headers) {
+        if (headers.containsKey(SET_COOKIE_KEY)
+                && headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
+            String cookie = headers.get(SET_COOKIE_KEY);
+            if (cookie.length() > 0) {
+                String[] splitCookie = cookie.split(";");
+                String[] splitSessionId = splitCookie[0].split("=");
+                cookie = splitSessionId[1];
+                SharedPreferences.Editor prefEditor = _preferences.edit();
+                prefEditor.putString(SESSION_COOKIE, cookie);
+                prefEditor.commit();
+            }
+        }
+    }
+
+    /**
+     * Adds session cookie to headers if exists.
+     * @param headers
+     */
+    public final void addSessionCookie(Map<String, String> headers) {
+        String sessionId = _preferences.getString(SESSION_COOKIE, "");
+        if (sessionId.length() > 0) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(SESSION_COOKIE);
+            builder.append("=");
+            builder.append(sessionId);
+            if (headers.containsKey(COOKIE_KEY)) {
+                builder.append("; ");
+                builder.append(headers.get(COOKIE_KEY));
+            }
+            headers.put(COOKIE_KEY, builder.toString());
+        }
+    }
+    public RequestQueue getRequestQueue() {
+        return _requestQueue;
+    }
+
 }

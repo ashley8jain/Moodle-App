@@ -90,20 +90,38 @@ public class MainActivity extends AppCompatActivity {
                     final ProgressDialog dialog = ProgressDialog.show(context,"", "Loading.Please wait...", true);
                     username[0] = id.getText().toString();
                     password[0] = pass.getText().toString();
-                    String url = "http://10.192.43.84:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
+                    String url = "http://10.192.38.186:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
                         public void onSuccess(String result) {
-                            dialog.dismiss();
-                            try {
-                                JSONObject jsonObject = new JSONObject(result);
-                                String success = jsonObject.getString("success");
-                                if (success == "false") {
-                                    Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Intent intent = new Intent(context, DashBoard.class);
-                                    intent.putExtra("response", result);
-                                    startActivity(intent);
+                                            dialog.dismiss();
+                                            try {
+
+                                                JSONObject jsonObject = new JSONObject(result);
+                                                String success = jsonObject.getString("success");
+                                                if (success == "false") {
+                                                    Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
+                                                } else {
+                                                    final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+                                                    String url2 = "http://10.192.38.186:8000/courses/list.json";
+                                                    final JSONObject user = jsonObject.getJSONObject("user");
+                                                    final String name = user.getString("first_name");
+                                                    final String email = user.getString("email");
+                                                    //final String  = user.getString();
+
+                                                    GETrequest.response(new GETrequest.VolleyCallback() {
+                                                        @Override
+                                                        public void onSuccess(String result1) {
+                                                            dialog.dismiss();
+                                                            System.out.println(result1);
+                                                            Intent main2frag_intent = new Intent(context, Main2Activity.class);
+                                                            main2frag_intent.putExtra("name", name);
+                                                            main2frag_intent.putExtra("email",email);
+                                                            main2frag_intent.putExtra("courses", result1);
+                                                            startActivity(main2frag_intent);
+                                                        }
+                                                    }, context, url2, dialog);
+
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

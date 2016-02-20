@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +28,19 @@ import org.json.JSONObject;
 public class Main2Activity extends Activity implements FragmentChangeListener{
     protected DrawerBuilder builder = null;
     protected AccountHeader headerResult= null;
+
+
+    //after pressing back button,go to homepage instead of login page
+    @Override
+    public void onBackPressed() {
+        Log.d("CDA", "Onback");
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +64,7 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .addProfiles(
-                        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com")
+                        new ProfileDrawerItem().withName(name).withEmail(email)
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override

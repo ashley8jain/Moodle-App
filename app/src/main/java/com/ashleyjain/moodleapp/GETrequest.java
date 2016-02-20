@@ -22,6 +22,7 @@ public class GETrequest {
                     public void onResponse(String response){
                         // Result handling
                         pd.dismiss();
+                        System.out.println(response);
                         callback.onSuccess(response);
                     }
                 },

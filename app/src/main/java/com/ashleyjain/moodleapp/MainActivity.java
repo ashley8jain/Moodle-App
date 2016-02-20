@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    public static final String localhost = "http://10.202.140.227:8000/";
     EditText id,pass;
     Button login;
     TextView signup;
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     final ProgressDialog dialog = ProgressDialog.show(context,"", "Loading.Please wait...", true);
                     username[0] = id.getText().toString();
                     password[0] = pass.getText().toString();
-                    String url = "http://10.192.49.56:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
+                    String url = localhost+"/default/login.json?userid=" + username[0] + "&password=" + password[0];
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
                         public void onSuccess(String result) {
@@ -103,9 +103,10 @@ public class MainActivity extends AppCompatActivity {
                                                     Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
                                                 } else {
                                                     final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-                                                    String url2 = "http://10.192.49.56:8000/courses/list.json";
+                                                    String url2 = localhost+"/courses/list.json";
                                                     final JSONObject user = jsonObject.getJSONObject("user");
-                                                    final String name = user.getString("first_name");
+                                                    final String fname = user.getString("first_name");
+                                                    final String lname = user.getString("last_name");
                                                     final String email = user.getString("email");
                                                     //final String  = user.getString();
 
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                                                             dialog.dismiss();
                                                             System.out.println(result1);
                                                             Intent main2frag_intent = new Intent(context, Main2Activity.class);
-                                                            main2frag_intent.putExtra("name", name);
+                                                            main2frag_intent.putExtra("name", fname+" "+lname);
                                                             main2frag_intent.putExtra("email",email);
                                                             main2frag_intent.putExtra("courses", result1);
                                                             startActivity(main2frag_intent);

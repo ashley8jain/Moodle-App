@@ -16,6 +16,7 @@ public class GETrequest {
     public static void response(final VolleyCallback callback, final Context context,String url, final ProgressDialog pd) {
 
         // Request a string response
+
         com.ashleyjain.moodleapp.StringRequest stringRequest = new com.ashleyjain.moodleapp.StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -39,7 +40,7 @@ public class GETrequest {
 // Add the request to the queue
         MainActivity.get().getRequestQueue().add(stringRequest);
     }
-    public interface VolleyCallback{
+    public interface VolleyCallback {
         void onSuccess(String result);
     }
 

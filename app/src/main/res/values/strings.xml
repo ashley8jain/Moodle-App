@@ -8,4 +8,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_my_course">myCourse</string>
+    <string name="title_activity_assignment">assignment</string>
+    <string name="title_activity_assignment_adapter">assignmentAdapter</string>
+    <string name="title_activity_threads">threads</string>
 </resources>

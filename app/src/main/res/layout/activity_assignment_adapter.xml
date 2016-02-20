@@ -7,53 +7,56 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.ashleyjain.moodleapp.courseAdapter">
+    tools:context="com.ashleyjain.moodleapp.assignmentAdapter">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/coursecode"
+        android:id="@+id/name"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="21sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/description"
+        android:layout_below="@+id/name"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
-        android:id="@+id/coursename"
-        android:layout_below="@+id/coursecode"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/deadline"
+        android:layout_below="@+id/description"
+        android:layout_centerHorizontal="true"
+        android:textColor="#d53030"
+        android:textSize="17sp" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Assignments"
-        android:id="@+id/assignments"
-        android:layout_below="@+id/coursename"
+        android:text="Submit"
+        android:id="@+id/button2"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="resources"
-        android:id="@+id/resources"
-        android:layout_below="@+id/assignments"
+        android:text="browse"
+        android:id="@+id/button3"
+        android:layout_above="@+id/button2"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="threads"
-        android:id="@+id/threads"
-        android:layout_below="@+id/resources"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="grade"
-        android:id="@+id/grades"
-        android:layout_below="@+id/threads"
+        android:id="@+id/editText"
+        android:layout_above="@+id/button3"
+        android:hint="file path"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

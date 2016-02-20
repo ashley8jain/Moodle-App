@@ -1,22 +1,22 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.ProgressDialog;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class DashBoard extends AppCompatActivity {
+public class DashBoard extends ListActivity {
     final Context context = DashBoard.this;
-
+    String[] coursecode,coursename;
     @Override
     public void onBackPressed() {
         Log.d("CDA", "Onback");
@@ -29,81 +29,43 @@ public class DashBoard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Moodle Plus");
+
+
 
         Intent intent = getIntent();
         String stringjson = intent.getStringExtra("response");
+        String courselis = intent.getStringExtra("courselist");
+        JSONObject jsonObject = null;
         try {
-            JSONObject jsonObject = new JSONObject(stringjson);
+            jsonObject = new JSONObject(stringjson);
             JSONObject userjson = jsonObject.getJSONObject("user");
 
             Toast.makeText(this,"Welcome on Moodle+ "+userjson.getString("first_name")+"!!", Toast.LENGTH_LONG).show();
+
+
+            JSONObject jsonObject2 = new JSONObject(courselis);
+            JSONArray coursearray = jsonObject2.getJSONArray("courses");
+            coursecode = new String[coursearray.length()];
+            coursename = new  String[coursearray.length()];
+            for (int i = 0; i < coursearray.length(); i++) {
+                JSONObject course = coursearray.getJSONObject(i);
+                coursecode[i] = course.getString("code");
+                coursename[i] = course.getString("name");
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,coursecode);
+            setListAdapter(adapter);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_home) {
-
-            return true;
-        }
-        else if(id == R.id.action_mycourse){
-            final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-            String url = "http://10.192.43.84:8000/courses/list.json";
-            GETrequest.response(new GETrequest.VolleyCallback() {
-                @Override
-                public void onSuccess(String result) {
-                        dialog.dismiss();
-                        System.out.println(result);
-                        Intent intent1 = new Intent(context, myCourse.class);
-                        intent1.putExtra("courselist",result);
-                        startActivity(intent1);
-                }
-            }, context, url, dialog);
-
-
-            return true;
-        }
-        else if(id == R.id.action_profile){
-
-            return true;
-        }
-        else if(id == R.id.action_password){
-            return true;
-        }
-        else if(id == R.id.action_logout){
-            final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-            String url = "http://10.192.43.84:8000/default/logout.json";
-            GETrequest.response(new GETrequest.VolleyCallback() {
-                @Override
-                public void onSuccess(String result) {
-                    dialog.dismiss();
-                    System.out.println(result);
-                    Intent intent1 = new Intent(context,MainActivity.class);
-                    startActivity(intent1);
-                }
-            }, context, url, dialog);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        Intent intent = new Intent(DashBoard.this,courseAdapter.class);
+        intent.putExtra("coursecode",coursecode[position]);
+        intent.putExtra("coursename",coursename[position]);
+        startActivity(intent);
     }
 
 }

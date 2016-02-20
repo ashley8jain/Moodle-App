@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     String url = "http://10.192.43.84:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
-                        public void onSuccess(String result) {
+                        public void onSuccess(final String result) {
                             dialog.dismiss();
                             try {
                                 JSONObject jsonObject = new JSONObject(result);
@@ -101,9 +101,20 @@ public class MainActivity extends AppCompatActivity {
                                 if (success == "false") {
                                     Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
                                 } else {
-                                    Intent intent = new Intent(context, DashBoard.class);
-                                    intent.putExtra("response", result);
-                                    startActivity(intent);
+                                    final ProgressDialog dialog2 = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+                                    String url2 = "http://10.192.43.84:8000/courses/list.json";
+                                    GETrequest.response(new GETrequest.VolleyCallback() {
+                                        @Override
+                                        public void onSuccess(String result2) {
+                                            dialog.dismiss();
+                                            System.out.println(result2);
+                                            Intent intent = new Intent(context, DashBoard.class);
+                                            intent.putExtra("response", result);
+                                            intent.putExtra("courselist", result2);
+                                            startActivity(intent);
+                                        }
+                                    }, context, url2, dialog2);
+
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

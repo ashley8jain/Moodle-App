@@ -9,13 +9,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ashleyjain.moodleapp.DashBoard"
-    tools:showIn="@layout/activity_dash_board">
+    tools:context="com.ashleyjain.moodleapp.threads"
+    tools:showIn="@layout/activity_threads">
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@android:id/list"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/editText2"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -25,4 +25,12 @@
         android:id="@android:id/empty"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

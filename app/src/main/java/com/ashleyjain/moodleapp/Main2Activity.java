@@ -5,18 +5,28 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class Main2Activity extends Activity implements FragmentChangeListener{
-
+    protected DrawerBuilder builder = null;
+    protected AccountHeader headerResult= null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +37,7 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String email = intent.getStringExtra("email");
-        String courselist_response = intent.getStringExtra("courses");
+        final String courselist_response = intent.getStringExtra("courses");
 
         Toast.makeText(this, "Welcome on Moodle+ " + name + "!!", Toast.LENGTH_LONG).show();
 
@@ -37,15 +47,83 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
         fragment.setArguments(bundle);
         getFragmentManager().beginTransaction().add(R.id.fragment_container,fragment).commit();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .addProfiles(
+                        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com")
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+
+        builder = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withDisplayBelowStatusBar(true)
+                .withAccountHeader(headerResult)
+                .withHasStableIds(true)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("Overview").withIdentifier(1),
+                        new PrimaryDrawerItem().withName("Grades").withIdentifier(2),
+                        new PrimaryDrawerItem().withName("Notification").withIdentifier(3),
+                        new SectionDrawerItem().withName("My courses"),
+                        new PrimaryDrawerItem().withName("Course 1").withIdentifier(4),
+                        new PrimaryDrawerItem().withName("Course 2").withIdentifier(5)
+
+                )
+
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View v, int position, IDrawerItem drawerItem) {
+                        Bundle courseB = new Bundle();
+                        switch (position) {
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+
+                                break;
+                            case 4:
+                                try {
+                                    JSONObject jsonObject = new JSONObject(courselist_response);
+                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
+                                    String cCode = coursearray.getJSONObject(0).getString("code");
+                                    courseB.putString("cCode", cCode);
+                                    CourseFragment coursefragment = new CourseFragment();
+                                    coursefragment.setArguments(courseB);
+                                    replaceFragment(coursefragment);
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 5:
+                                try {
+                                    JSONObject jsonObject = new JSONObject(courselist_response);
+                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
+                                    String cCode = coursearray.getJSONObject(0).getString("code");
+                                    courseB.putString("cCode", cCode);
+                                    CourseFragment coursefragment = new CourseFragment();
+                                    coursefragment.setArguments(courseB);
+                                    replaceFragment(coursefragment);
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+
+                });
+
+        Drawer drawer = builder.build();
+
     }
 
     public void replaceFragment(Fragment courseFrag){

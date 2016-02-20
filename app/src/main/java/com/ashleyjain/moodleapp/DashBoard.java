@@ -66,7 +66,7 @@ public class DashBoard extends AppCompatActivity {
         }
         else if(id == R.id.action_mycourse){
             final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-            String url = "http://10.192.43.84:8000/courses/list.json";
+            String url = "http://10.192.49.56:8000/courses/list.json";
             GETrequest.response(new GETrequest.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
@@ -90,7 +90,7 @@ public class DashBoard extends AppCompatActivity {
         }
         else if(id == R.id.action_logout){
             final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-            String url = "http://10.192.43.84:8000/default/logout.json";
+            String url = "http://10.192.49.56:8000/default/logout.json";
             GETrequest.response(new GETrequest.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {

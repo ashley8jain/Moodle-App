@@ -33,7 +33,6 @@ public class courseObj {
         this.description = idescription;
         this.credits= icredits;
         this.ltp = iltp;
-
     }
 
     public String getCode(){

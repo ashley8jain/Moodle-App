@@ -1,6 +1,5 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,7 +27,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    public static final String localhost = "http://10.42.0.1:8000/";
     EditText id,pass;
     Button login;
     TextView signup;
@@ -94,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     username[0] = id.getText().toString();
                     password[0] = pass.getText().toString();
                     String url = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/default/login.json?userid=" + username[0] + "&password=" + password[0];
+
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
                         public void onSuccess(String result) {
@@ -105,10 +105,12 @@ public class MainActivity extends AppCompatActivity {
                                                 if (success == "false") {
                                                     Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
                                                 } else {
+
                                                     final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
                                                     String url2 = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/courses/list.json";
                                                     final JSONObject user = jsonObject.getJSONObject("user");
-                                                    final String name = user.getString("first_name");
+                                                    final String fname = user.getString("first_name");
+                                                    final String lname = user.getString("last_name");
                                                     final String email = user.getString("email");
                                                     //final String  = user.getString();
                                                     final Intent main2frag_intent = new Intent(context, Main2Activity.class);
@@ -127,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                                                             dialog1.dismiss();
                                                             //System.out.println(result1);
                                                             //Intent main2frag_intent = new Intent(context, Main2Activity.class);
-                                                            main2frag_intent.putExtra("name", name);
+                                                            main2frag_intent.putExtra("name", fname+" "+lname);
                                                             main2frag_intent.putExtra("email",email);
                                                             main2frag_intent.putExtra("courses", result1);
                                                             startActivity(main2frag_intent);
@@ -144,13 +146,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+///////////
 
     }
 
     //Check if there is network connection or not
     public static boolean isNetworkConnected(Context con) {
-        ConnectivityManager connMgr = (ConnectivityManager) con.getSystemService(Activity.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) con.getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected())
             return true;

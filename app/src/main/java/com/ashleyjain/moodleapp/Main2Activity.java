@@ -1,16 +1,29 @@
 package com.ashleyjain.moodleapp;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
+
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,37 +33,69 @@ import java.util.ArrayList;
 
 
 public class Main2Activity extends AppCompatActivity implements FragmentChangeListener{
+    protected DrawerBuilder builder = null;
+    protected AccountHeader headerResult= null;
+    String notJSON;
+
+
+    //after pressing back button,go to homepage instead of login page
+    @Override
+    public void onBackPressed() {
+        Log.d("CDA", "Onback");
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+
+            case R.id.notification:
+                Fragment notifFragment = new NotificationFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("notJSON",notJSON);
+                notifFragment.setArguments(bundle);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
+                        .addToBackStack(notifFragment.toString())
+                        .commit();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        /*Toolbar mToolbar = (Toolbar) findViewById(R.id.app_bar);
-        mToolbar.setTitle("gnappo");
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        /*mToolbar.setTitle("gnappo");
         mToolbar.showOverflowMenu();
         setSupportActionBar(mToolbar);*/
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String email = intent.getStringExtra("email");
-        String courselist_response = intent.getStringExtra("courses");
+        final String courselist_response = intent.getStringExtra("courses");
 
-        /*String notJSON = intent.getStringExtra("notJSON");
-        ArrayList<notifObj> notifList = new ArrayList<notifObj>();
+        notJSON = intent.getStringExtra("notJSON");
         try {
             JSONObject jsonObject = new JSONObject(notJSON);
             JSONArray notif_array = jsonObject.getJSONArray("notifications");
-            for (int i = 0; i < notif_array.length(); i++) {
-                JSONObject notif = notif_array.getJSONObject(i);
-                //System.out.println("<<<<<-----------"+courselist.get(0).getCode()+"&&&"+courselist.get(1).getCode()+"------------------>>>>>>>");
-                notifObj nObj = new notifObj(notif.getString("user_id"),notif.getString("description"),notif.getString("is_seen "),notif.getString("created_at"),notif.getString("id"));
-                notifList.add(i,nObj);
-            }
+            int no_of_notifs = notif_array.length();
         }
         catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
 
         Toast.makeText(this, "Welcome on Moodle+ " + name + "!!", Toast.LENGTH_LONG).show();
 
@@ -58,26 +103,94 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
         bundle.putString("course_list", courselist_response);
         MainActivityFragment fragment = new MainActivityFragment();
         fragment.setArguments(bundle);
-        FragmentTransaction fTransaction = getFragmentManager().beginTransaction().add(R.id.fragment_container, fragment);
-        fTransaction.addToBackStack(fragment.toString());
-        fTransaction.commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_container, fragment)
+                                                .addToBackStack("toMainFragment")
+                                                 .commit();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .addProfiles(
+                        new ProfileDrawerItem().withName(name).withEmail(email)
+                )
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+
+        builder = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withDisplayBelowStatusBar(true)
+                .withAccountHeader(headerResult)
+                .withHasStableIds(true)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("Overview").withIdentifier(1),
+                        new PrimaryDrawerItem().withName("Grades").withIdentifier(2),
+                        new PrimaryDrawerItem().withName("Notification").withIdentifier(3),
+                        new SectionDrawerItem().withName("My courses"),
+                        new PrimaryDrawerItem().withName("Course 1").withIdentifier(4),
+                        new PrimaryDrawerItem().withName("Course 2").withIdentifier(5)
+
+                )
+
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View v, int position, IDrawerItem drawerItem) {
+                        Bundle courseB = new Bundle();
+                        switch (position) {
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+
+                                break;
+                            case 4:
+                                try {
+                                    JSONObject jsonObject = new JSONObject(courselist_response);
+                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
+                                    String cCode = coursearray.getJSONObject(0).getString("code");
+                                    courseB.putString("cCode", cCode);
+                                    CourseFragment coursefragment = new CourseFragment();
+                                    coursefragment.setArguments(courseB);
+                                    replaceFragment(coursefragment);
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 5:
+                                try {
+                                    JSONObject jsonObject = new JSONObject(courselist_response);
+                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
+                                    String cCode = coursearray.getJSONObject(0).getString("code");
+                                    courseB.putString("cCode", cCode);
+                                    CourseFragment coursefragment = new CourseFragment();
+                                    coursefragment.setArguments(courseB);
+                                    replaceFragment(coursefragment);
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
+                        return false;
+                    }
+
+                });
+
+        Drawer drawer = builder.build();
+
     }
 
     public void replaceFragment(Fragment courseFrag){
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, courseFrag, courseFrag.toString());
-        fragmentTransaction.addToBackStack(courseFrag.toString());
-        fragmentTransaction.commit();
+        getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, courseFrag, courseFrag.toString())
+                            .addToBackStack(courseFrag.toString())
+                            .commit();
     }
 
 }

@@ -106,7 +106,7 @@ public class MainActivityFragment extends Fragment {
             private TextView nameTxtDisplay;
 
             public void setI(String cCode){
-                bundle.putString("position",cCode);
+                bundle.putString("cCode",cCode);
             }
 
             public myViewHolder(View view){

@@ -23,7 +23,7 @@ public class GradesFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         cCode = getArguments().getString("cCode");
-        String url = MainActivity.localhost+"/courses/course.json/"+cCode+"/grades";
+        String url = "http://10.192.43.84:8000/courses/course.json/"+cCode+"/grades";
         // Inflate the layout for this fragment
         final ProgressDialog dialog = ProgressDialog.show(getActivity(),"", "Loading.Please wait...", true);
         GETrequest.response(new GETrequest.VolleyCallback() {

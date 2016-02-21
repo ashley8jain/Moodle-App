@@ -35,7 +35,7 @@
             android:name=".myCourse"
             android:label="@string/title_activity_my_course"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".adapter.courseAdapter" />
+        <activity android:name=".courseAdapter" />
         <activity android:name=".Main2Activity"></activity>
     </application>
 

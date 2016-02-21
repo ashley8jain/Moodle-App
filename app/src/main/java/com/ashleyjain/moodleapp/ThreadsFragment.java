@@ -25,7 +25,9 @@ public class ThreadsFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         cCode = getArguments().getString("cCode");
-        String url = "http://10.192.43.84:8000/courses/course.json/"+cCode+"/threads";
+
+        String url = "http://"+ ((myApplication) getActivity().getApplication()).getLocalHost() +"/courses/course.json/"+cCode+"/threads";
+
         final ProgressDialog dialog = ProgressDialog.show(getActivity(),"", "Loading.Please wait...", true);
         GETrequest.response(new GETrequest.VolleyCallback() {
             @Override

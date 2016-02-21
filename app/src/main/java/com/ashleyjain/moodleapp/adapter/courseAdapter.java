@@ -1,9 +1,11 @@
-package com.ashleyjain.moodleapp;
+package com.ashleyjain.moodleapp.adapter;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.ashleyjain.moodleapp.R;
 
 public class courseAdapter extends AppCompatActivity {
     TextView textView;

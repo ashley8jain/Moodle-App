@@ -27,7 +27,8 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
+
     EditText id,pass;
     Button login;
     TextView signup;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //set localhost
+        ((myApplication) this.getApplication()).setLocalHost("10.192.49.56:8000");
+
         final Context context = MainActivity.this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -86,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog alertDialog = alertbuilder.create();
                     alertDialog.show();
                 } else {
-                    final ProgressDialog dialog = ProgressDialog.show(context,"", "Loading.Please wait...", true);
+                    final ProgressDialog dialog = ProgressDialog.show(context,"", "Authenticating...", true);
                     username[0] = id.getText().toString();
                     password[0] = pass.getText().toString();
-                    String url = "http://10.192.43.84:8000/default/login.json?userid=" + username[0] + "&password=" + password[0];
+
+                    String url = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/default/login.json?userid=" + username[0] + "&password=" + password[0];
+
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
                         public void onSuccess(String result) {
@@ -101,26 +107,37 @@ public class MainActivity extends AppCompatActivity {
                                                 if (success == "false") {
                                                     Toast.makeText(context, "Wrong username or password!!", Toast.LENGTH_LONG).show();
                                                 } else {
-                                                    final ProgressDialog dialog = ProgressDialog.show(context, "", "Loading.Please wait...", true);
-                                                    String url2 = "http://10.192.43.84:8000/courses/list.json";
+
+                                                    final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
+                                                    String url2 = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/courses/list.json";
                                                     final JSONObject user = jsonObject.getJSONObject("user");
                                                     final String fname = user.getString("first_name");
                                                     final String lname = user.getString("last_name");
                                                     final String email = user.getString("email");
                                                     //final String  = user.getString();
+                                                    final Intent main2frag_intent = new Intent(context, Main2Activity.class);
+
+                                                    GETrequest.response(new GETrequest.VolleyCallback() {
+                                                        @Override
+                                                        public void onSuccess(String notResult) {
+                                                            System.out.println(notResult);
+                                                            main2frag_intent.putExtra("notJSON", notResult);
+                                                        }
+                                                    }, context, url2, dialog1);
 
                                                     GETrequest.response(new GETrequest.VolleyCallback() {
                                                         @Override
                                                         public void onSuccess(String result1) {
-                                                            dialog.dismiss();
-                                                            System.out.println(result1);
-                                                            Intent main2frag_intent = new Intent(context, Main2Activity.class);
+
+                                                            dialog1.dismiss();
+                                                            //System.out.println(result1);
+                                                            //Intent main2frag_intent = new Intent(context, Main2Activity.class);
                                                             main2frag_intent.putExtra("name", fname+" "+lname);
                                                             main2frag_intent.putExtra("email",email);
                                                             main2frag_intent.putExtra("courses", result1);
                                                             startActivity(main2frag_intent);
                                                         }
-                                                    }, context, url2, dialog);
+                                                    }, context, url2, dialog1);
 
                                 }
                             } catch (JSONException e) {
@@ -138,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Check if there is network connection or not
     public static boolean isNetworkConnected(Context con) {
-        ConnectivityManager connMgr = (ConnectivityManager) con.getSystemService(Activity.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) con.getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected())
             return true;

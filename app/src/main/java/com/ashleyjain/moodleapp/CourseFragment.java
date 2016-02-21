@@ -23,7 +23,6 @@ public class CourseFragment extends ListFragment implements OnItemClickListener{
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

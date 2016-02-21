@@ -2,12 +2,18 @@ package com.ashleyjain.moodleapp;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.support.v7.widget.Toolbar;
+import android.support.design.widget.FloatingActionButton;
+
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -25,21 +31,56 @@ import org.json.JSONObject;
 
 
 public class Main2Activity extends Activity implements FragmentChangeListener{
+
     protected DrawerBuilder builder = null;
     protected AccountHeader headerResult= null;
+    String notJSON;
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.notification:
+                Fragment notifFragment = new NotificationFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("notJSON",notJSON);
+                notifFragment.setArguments(bundle);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
+                        .addToBackStack(notifFragment.toString())
+                        .commit();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        //setActionBar(toolbar);
+        /*mToolbar.setTitle("gnappo");
+        mToolbar.showOverflowMenu();
+        setSupportActionBar(mToolbar);*/
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String email = intent.getStringExtra("email");
         final String courselist_response = intent.getStringExtra("courses");
+
+        notJSON = intent.getStringExtra("notJSON");
+        try {
+            JSONObject jsonObject = new JSONObject(notJSON);
+            JSONArray notif_array = jsonObject.getJSONArray("notifications");
+            int no_of_notifs = notif_array.length();
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         Toast.makeText(this, "Welcome on Moodle+ " + name + "!!", Toast.LENGTH_LONG).show();
 
@@ -47,10 +88,12 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
         bundle.putString("course_list", courselist_response);
         MainActivityFragment fragment = new MainActivityFragment();
         fragment.setArguments(bundle);
-        getFragmentManager().beginTransaction().add(R.id.fragment_container,fragment).commit();
+        getFragmentManager().beginTransaction().add(R.id.fragment_container, fragment)
+                                                .addToBackStack("toMainFragment")
+                                                 .commit();
 
         headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
+                                 .withActivity(this)
                 .addProfiles(
                         new ProfileDrawerItem().withName(name).withEmail(email)
                 )
@@ -60,7 +103,7 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                         return false;
                     }
                 })
-                .build();
+                                 .build();
 
         builder = new DrawerBuilder()
                 .withActivity(this)
@@ -129,10 +172,10 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
     }
 
     public void replaceFragment(Fragment courseFrag){
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, courseFrag, courseFrag.toString());
-        fragmentTransaction.addToBackStack(courseFrag.toString());
-        fragmentTransaction.commit();
+        getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, courseFrag, courseFrag.toString())
+                            .addToBackStack(courseFrag.toString())
+                            .commit();
     }
 
 }

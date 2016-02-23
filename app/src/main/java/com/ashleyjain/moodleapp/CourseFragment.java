@@ -1,9 +1,10 @@
 package com.ashleyjain.moodleapp;
 
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
+import android.app.ProgressDialog;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,14 +45,26 @@ public class CourseFragment extends ListFragment implements OnItemClickListener{
         Bundle bundle = new Bundle();
         switch (position){
             case 0:
-               Fragment fragment = new OverviewFragment();
+                Fragment fragment = new OverviewFragment();
                 replaceFragment(fragment);
                 break;
             case 1:
-                fragment = new GradesFragment();
-                bundle.putString("cCode", cCode);
-                fragment.setArguments(bundle);
-                replaceFragment(fragment);
+                final ProgressDialog dialog1 = ProgressDialog.show(getContext(), "", "Fetching Details...", true);
+                String url2 = "http://"+((myApplication) getActivity().getApplication()).getLocalHost()+"/courses/course.json/"+cCode+"/grades";
+
+                GETrequest.response(new GETrequest.VolleyCallback() {
+                    @Override
+                    public void onSuccess(String result1) {
+                        Fragment fragment = new GradesFragment();
+                        dialog1.dismiss();
+                        Bundle bundle1 = new Bundle();
+                        bundle1.putString("gradesJSON", result1);
+                        bundle1.putBoolean("IsOverall",false);
+                        fragment.setArguments(bundle1);
+                        replaceFragment(fragment);
+
+                    }
+                }, getContext(), url2, dialog1);
                 break;
             case 2:
                 fragment = new AssignmentFragment();

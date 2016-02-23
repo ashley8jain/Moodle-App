@@ -1,19 +1,24 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.app.Application;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -30,11 +35,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class Main2Activity extends Activity implements FragmentChangeListener{
+public class Main2Activity extends AppCompatActivity implements FragmentChangeListener{
 
-    protected DrawerBuilder builder = null;
+    protected Drawer drawer = null;
     protected AccountHeader headerResult= null;
     String notJSON;
+    Toolbar toolbar;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -42,30 +55,71 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
             case R.id.notification:
                 Fragment notifFragment = new NotificationFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("notJSON",notJSON);
+                Boolean IsNotif = false;
+                if(notJSON!=null){
+                    bundle.putString("notJSON", notJSON);
+                    IsNotif = true;
+                    bundle.putBoolean("IsNotif",IsNotif);
+                }
                 notifFragment.setArguments(bundle);
-                getFragmentManager().beginTransaction()
+                getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
                         .addToBackStack(notifFragment.toString())
                         .commit();
                 return true;
+            case R.id.material_drawer_switch:
+                drawer.openDrawer();
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
     }
+/*
+    boolean doubleBackToExitPressedOnce = false;
 
+    @Override
+    public void onBackPressed() {
+
+        int count = getFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 1000);
+            super.onBackPressed();
+            //additional code
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        final Context context = this;
+        final myApplication  applcn = (myApplication) getApplication();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        //setActionBar(toolbar);
-        /*mToolbar.setTitle("gnappo");
-        mToolbar.showOverflowMenu();
-        setSupportActionBar(mToolbar);*/
+        toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
@@ -74,11 +128,11 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
 
         notJSON = intent.getStringExtra("notJSON");
         try {
-            JSONObject jsonObject = new JSONObject(notJSON);
-            JSONArray notif_array = jsonObject.getJSONArray("notifications");
-            int no_of_notifs = notif_array.length();
+                JSONObject jsonObject = new JSONObject(notJSON);
+                JSONArray notif_array = jsonObject.getJSONArray("notifications");
+                int no_of_notifs = notif_array.length();
         }
-        catch (JSONException e) {
+        catch (NullPointerException | JSONException e) {
             e.printStackTrace();
         }
 
@@ -88,9 +142,10 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
         bundle.putString("course_list", courselist_response);
         MainActivityFragment fragment = new MainActivityFragment();
         fragment.setArguments(bundle);
-        getFragmentManager().beginTransaction().add(R.id.fragment_container, fragment)
-                                                .addToBackStack("toMainFragment")
-                                                 .commit();
+        getSupportFragmentManager().beginTransaction()
+                                    .add(R.id.fragment_container, fragment)
+                                    //.addToBackStack("toMainFragment")
+                                    .commit();
 
         headerResult = new AccountHeaderBuilder()
                                  .withActivity(this)
@@ -105,10 +160,10 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                 })
                                  .build();
 
-        builder = new DrawerBuilder()
+        drawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
                 .withDisplayBelowStatusBar(true)
+                .withActionBarDrawerToggle(true)
                 .withAccountHeader(headerResult)
                 .withHasStableIds(true)
                 .addDrawerItems(
@@ -118,20 +173,33 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                         new SectionDrawerItem().withName("My courses"),
                         new PrimaryDrawerItem().withName("Course 1").withIdentifier(4),
                         new PrimaryDrawerItem().withName("Course 2").withIdentifier(5)
-
                 )
-
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View v, int position, IDrawerItem drawerItem) {
                         Bundle courseB = new Bundle();
                         switch (position) {
                             case 1:
+
                                 break;
                             case 2:
+                                final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
+                                String url2 = "http://" + applcn.getLocalHost() + "/default/grades.json/";
+
+                                GETrequest.response(new GETrequest.VolleyCallback() {
+                                    @Override
+                                    public void onSuccess(String result1) {
+                                        Fragment fragment = new gradesOverallFragment();
+                                        dialog1.dismiss();
+                                        Bundle bundle1 = new Bundle();
+                                        bundle1.putString("gradesJSON", result1);
+                                        fragment.setArguments(bundle1);
+                                        replaceFragment(fragment);
+
+                                    }
+                                }, context, url2, dialog1);
                                 break;
                             case 3:
-
                                 break;
                             case 4:
                                 try {
@@ -142,8 +210,7 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                                     CourseFragment coursefragment = new CourseFragment();
                                     coursefragment.setArguments(courseB);
                                     replaceFragment(coursefragment);
-                                }
-                                catch (JSONException e) {
+                                } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 break;
@@ -156,8 +223,7 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                                     CourseFragment coursefragment = new CourseFragment();
                                     coursefragment.setArguments(courseB);
                                     replaceFragment(coursefragment);
-                                }
-                                catch (JSONException e) {
+                                } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 break;
@@ -165,14 +231,12 @@ public class Main2Activity extends Activity implements FragmentChangeListener{
                         return false;
                     }
 
-                });
-
-        Drawer drawer = builder.build();
-
+                }).build();
+        //drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }
 
     public void replaceFragment(Fragment courseFrag){
-        getFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container, courseFrag, courseFrag.toString())
                             .addToBackStack(courseFrag.toString())
                             .commit();

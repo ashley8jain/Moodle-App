@@ -1,6 +1,5 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -27,7 +26,7 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     EditText id,pass;
     Button login;
@@ -48,7 +47,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //set localhost
-        ((myApplication) this.getApplication()).setLocalHost("10.192.49.56:8000");
+        ((myApplication) this.getApplication()).setLocalHost("10.42.0.1:8000");
 
         final Context context = MainActivity.this;
         super.onCreate(savedInstanceState);
@@ -117,13 +116,14 @@ public class MainActivity extends Activity {
                                                     //final String  = user.getString();
                                                     final Intent main2frag_intent = new Intent(context, Main2Activity.class);
 
+                                                    String url3 = "http://"+ ((myApplication) getApplication()).getLocalHost()+"/default/notifications.json";
                                                     GETrequest.response(new GETrequest.VolleyCallback() {
                                                         @Override
                                                         public void onSuccess(String notResult) {
                                                             System.out.println(notResult);
                                                             main2frag_intent.putExtra("notJSON", notResult);
                                                         }
-                                                    }, context, url2, dialog1);
+                                                    }, context, url3, dialog1);
 
                                                     GETrequest.response(new GETrequest.VolleyCallback() {
                                                         @Override

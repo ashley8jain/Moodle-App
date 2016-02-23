@@ -1,6 +1,6 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 /**
  * Created by saurabh on 19/2/16.

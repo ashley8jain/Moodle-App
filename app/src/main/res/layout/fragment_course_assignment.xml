@@ -5,8 +5,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="Assignment"/>
+        android:textSize="35sp"
+        android:text="Assignments"
+        android:padding="4dp"
+        android:layout_gravity="center_horizontal|center_vertical"/>
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

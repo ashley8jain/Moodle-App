@@ -46,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //set localhost
-        ((myApplication) this.getApplication()).setLocalHost("10.42.0.1:8000");
+        ((myApplication) this.getApplication()).setLocalHost("192.168.1.2:8000");
 
         final Context context = MainActivity.this;
         super.onCreate(savedInstanceState);

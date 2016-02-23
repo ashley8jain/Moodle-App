@@ -34,6 +34,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 
 public class Main2Activity extends AppCompatActivity implements FragmentChangeListener{
 
@@ -59,8 +61,8 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 if(notJSON!=null){
                     bundle.putString("notJSON", notJSON);
                     IsNotif = true;
-                    bundle.putBoolean("IsNotif",IsNotif);
                 }
+                bundle.putBoolean("IsNotif",IsNotif);
                 notifFragment.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
@@ -124,7 +126,20 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String email = intent.getStringExtra("email");
+
         final String courselist_response = intent.getStringExtra("courses");
+        final ArrayList<String> cCodeArray = new ArrayList<String>();
+        JSONArray coursearray = null;
+        try {
+            JSONObject jsonObject = new JSONObject(courselist_response);
+            coursearray = jsonObject.getJSONArray("courses");
+            for (int i = 0; i < coursearray.length(); i++) {
+                String cCode = coursearray.getJSONObject(i).getString("code");
+                cCodeArray.add(cCode);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         notJSON = intent.getStringExtra("notJSON");
         try {
@@ -148,19 +163,33 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                                     .commit();
 
         headerResult = new AccountHeaderBuilder()
-                                 .withActivity(this)
+                .withActivity(this)
                 .addProfiles(
                         new ProfileDrawerItem().withName(name).withEmail(email)
                 )
+                .withProfileImagesClickable(true)
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+                        Toast.makeText(getApplicationContext(), "Click me hoss", Toast.LENGTH_LONG).show();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        return false;
+                    }
+                })
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
                         return false;
                     }
                 })
-                                 .build();
+                .build();
 
-        drawer = new DrawerBuilder()
+        final DrawerBuilder builder = new DrawerBuilder()
                 .withActivity(this)
                 .withDisplayBelowStatusBar(true)
                 .withActionBarDrawerToggle(true)
@@ -170,69 +199,53 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                         new PrimaryDrawerItem().withName("Overview").withIdentifier(1),
                         new PrimaryDrawerItem().withName("Grades").withIdentifier(2),
                         new PrimaryDrawerItem().withName("Notification").withIdentifier(3),
-                        new SectionDrawerItem().withName("My courses"),
-                        new PrimaryDrawerItem().withName("Course 1").withIdentifier(4),
-                        new PrimaryDrawerItem().withName("Course 2").withIdentifier(5)
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View v, int position, IDrawerItem drawerItem) {
-                        Bundle courseB = new Bundle();
-                        switch (position) {
-                            case 1:
+                        new SectionDrawerItem().withName("My courses"));
+        for (int i = 0; i < coursearray.length(); i++) {
+            builder.addDrawerItems(
+                    new PrimaryDrawerItem().withName(cCodeArray.get(i)).withIdentifier(4+i)
+            );
+        }
+        builder.withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View v, int position, IDrawerItem drawerItem) {
+                Bundle courseB = new Bundle();
+                switch (position) {
+                    default:
+                        if (position == 1) {
 
-                                break;
-                            case 2:
-                                final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
-                                String url2 = "http://" + applcn.getLocalHost() + "/default/grades.json/";
-
-                                GETrequest.response(new GETrequest.VolleyCallback() {
-                                    @Override
-                                    public void onSuccess(String result1) {
-                                        Fragment fragment = new gradesOverallFragment();
-                                        dialog1.dismiss();
-                                        Bundle bundle1 = new Bundle();
-                                        bundle1.putString("gradesJSON", result1);
-                                        fragment.setArguments(bundle1);
-                                        replaceFragment(fragment);
-
-                                    }
-                                }, context, url2, dialog1);
-                                break;
-                            case 3:
-                                break;
-                            case 4:
-                                try {
-                                    JSONObject jsonObject = new JSONObject(courselist_response);
-                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
-                                    String cCode = coursearray.getJSONObject(0).getString("code");
-                                    courseB.putString("cCode", cCode);
-                                    CourseFragment coursefragment = new CourseFragment();
-                                    coursefragment.setArguments(courseB);
-                                    replaceFragment(coursefragment);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                break;
-                            case 5:
-                                try {
-                                    JSONObject jsonObject = new JSONObject(courselist_response);
-                                    JSONArray coursearray = jsonObject.getJSONArray("courses");
-                                    String cCode = coursearray.getJSONObject(0).getString("code");
-                                    courseB.putString("cCode", cCode);
-                                    CourseFragment coursefragment = new CourseFragment();
-                                    coursefragment.setArguments(courseB);
-                                    replaceFragment(coursefragment);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                break;
                         }
-                        return false;
-                    }
+                        else
+                        if (position == 2) {
+                            final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
+                            String url2 = "http://" + applcn.getLocalHost() + "/default/grades.json/";
 
-                }).build();
-        //drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+                            GETrequest.response(new GETrequest.VolleyCallback() {
+                                @Override
+                                public void onSuccess(String result1) {
+                                    Fragment fragment = new gradesOverallFragment();
+                                    dialog1.dismiss();
+                                    Bundle bundle1 = new Bundle();
+                                    bundle1.putString("gradesJSON", result1);
+                                    fragment.setArguments(bundle1);
+                                    replaceFragment(fragment);
+
+                                }
+                            }, context, url2, dialog1);
+                        }
+                        else if (position == 3) {
+                            Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            courseB.putString("cCode", cCodeArray.get(position - 5));
+                            CourseFragment coursefragment = new CourseFragment();
+                            coursefragment.setArguments(courseB);
+                            replaceFragment(coursefragment);
+                        }
+                        break;
+                }
+            return false;
+        }});
+        drawer = builder.build();
     }
 
     public void replaceFragment(Fragment courseFrag){

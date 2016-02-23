@@ -10,16 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import com.ashleyjain.moodleapp.customAdapter.AssignmentCustomAdapter;
+import com.ashleyjain.moodleapp.customAdapter.ThreadsCustomAdapter;
+import com.ashleyjain.moodleapp.items.AssignmentItems;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by chandudasari on 20/02/16.
  */
 public class ThreadsFragment extends ListFragment {
     public String cCode;
-    String[] title,updates,combined;
+    String[] title,updates,combined,descp;
+    private List<AssignmentItems> assignmentItems;
+    ThreadsCustomAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -39,17 +48,26 @@ public class ThreadsFragment extends ListFragment {
                     title = new String[arr.length()];
                     updates = new String[arr.length()];
                     combined = new String[arr.length()];
+                    descp = new String[arr.length()];
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject ass = arr.getJSONObject(i);
                         title[i] = ass.getString("title");
                         updates[i] = ass.getString("updated_at");
-                        combined[i]=title[i]+" ---> updated at: "+updates[i];
+                        descp[i] = ass.getString("description");
+                        combined[i]=title[i]+" ---> "+descp[i];
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,combined);
+                assignmentItems = new ArrayList<AssignmentItems>();
+
+                for (int i = 0; i < title.length; i++) {
+                    AssignmentItems items = new AssignmentItems(combined[i],updates[i] );
+
+                    assignmentItems.add(items);
+                }
+                adapter = new ThreadsCustomAdapter(getActivity(), assignmentItems);
                 setListAdapter(adapter);
             }
         }, getActivity(), url, dialog);

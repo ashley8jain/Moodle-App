@@ -12,10 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ashleyjain.moodleapp.adapter.AssignmentAdapter;
+import com.ashleyjain.moodleapp.customAdapter.AssignmentCustomAdapter;
+import com.ashleyjain.moodleapp.items.AssignmentItems;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by chandudasari on 20/02/16.
@@ -23,6 +28,8 @@ import org.json.JSONObject;
 public class AssignmentFragment extends ListFragment {
     public String cCode;
     String[] assignName,assignDeadline,assignDescr;
+    private List<AssignmentItems> assignmentItems;
+    AssignmentCustomAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,7 +57,15 @@ public class AssignmentFragment extends ListFragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,assignName);
+                assignmentItems = new ArrayList<AssignmentItems>();
+
+                for (int i = 0; i < assignName.length; i++) {
+                    AssignmentItems items = new AssignmentItems(assignName[i],assignDeadline[i] );
+
+                    assignmentItems.add(items);
+                }
+                adapter = new AssignmentCustomAdapter(getActivity(), assignmentItems);
+//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,assignName);
                 setListAdapter(adapter);
 
             }
@@ -68,6 +83,20 @@ public class AssignmentFragment extends ListFragment {
         fragment.setArguments(bundle);
         replaceFragment(fragment);
 
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        assignmentItems = new ArrayList<AssignmentItems>();
+//
+//        for (int i = 0; i < assignName.length; i++) {
+//            AssignmentItems items = new AssignmentItems(assignName[i],assignName[i] );
+//
+//            assignmentItems.add(items);
+//        }
+//        adapter = new AssignmentCustomAdapter(getActivity(), assignmentItems);
+//        ListView lv = (ListView) getView().findViewById(android.R.id.list);
+//        lv.setAdapter(adapter);
     }
 
     public void replaceFragment(Fragment courseFrag){

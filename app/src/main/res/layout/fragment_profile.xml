@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Profile"
+        android:id="@+id/profile"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:padding="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:textColor="#ffffff" />
 
     <EditText
         android:layout_width="match_parent"
@@ -9,8 +24,7 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/firstname"
-        android:text="vinay"
-        android:hint="Username"
+        android:hint="First Name"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
     <EditText
@@ -19,8 +33,7 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/lastname"
-        android:text="vinay"
-        android:hint="Username"
+        android:hint="Last Name"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
     <EditText
@@ -29,9 +42,8 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/email"
-        android:text="vinay"
         android:inputType="textEmailAddress"
-        android:hint="Username"
+        android:hint="Email"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
     <EditText
@@ -40,7 +52,6 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/Username"
-        android:text="vinay"
         android:hint="Username"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
@@ -50,8 +61,7 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/Entryno"
-        android:text="vinay"
-        android:hint="Username"
+        android:hint="Entry no"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
     <EditText
@@ -60,9 +70,13 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/type"
-        android:text="vinay"
-        android:hint="Username"
+        android:hint="Type"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

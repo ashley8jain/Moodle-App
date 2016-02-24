@@ -36,7 +36,7 @@ import java.util.ArrayList;
 public class Main2Activity extends AppCompatActivity implements FragmentChangeListener{
 
     protected Drawer drawer = null;
-    protected AccountHeader headerResult= null;
+    AccountHeader headerResult= null;
     String notJSON;
     Toolbar toolbar;
     Context context = Main2Activity.this;
@@ -136,6 +136,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                         new ProfileSettingDrawerItem()
                                 .withName("Log Out")
                                 .withIcon(R.drawable.ic_power_settings_new_black_24dp)
+                                .withIdentifier(1)
                 )
                 .withHeaderBackground(R.drawable.iit_delhi)
                 .withProfileImagesClickable(true)
@@ -155,15 +156,14 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                     }
                 })
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
-                })
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-                        Toast.makeText(getApplicationContext(), "Log Out", Toast.LENGTH_LONG).show();
+
+                        if (profile != null && profile instanceof IDrawerItem) {
+                            switch ((int) profile.getIdentifier()) {
+                                case 1:
+                                    Toast.makeText(getApplicationContext(), "Log Out", Toast.LENGTH_LONG).show();
                         final ProgressDialog dialog2 = ProgressDialog.show(context, "", "Loading.Please wait...", true);
 
                                   String url = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/default/logout.json";
@@ -175,10 +175,17 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                                            finish();
                                        }
                                    }, context, url, dialog2);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                         return false;
                     }
                 })
+
                 .build();
+
 
         final DrawerBuilder builder = new DrawerBuilder()
                 .withActivity(this)
@@ -203,7 +210,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 switch (position) {
                     default:
                         if (position == 1) {
-                            MainOverview overview = new MainOverview();
+                            OverviewFragment overview = new OverviewFragment();
                             replaceFragment(overview);
                         } else if (position == 2) {
                             final ProgressDialog dialog1 = ProgressDialog.show(context, "", "Fetching Details...", true);
@@ -252,9 +259,6 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
         drawer = builder.build();
         TextView Name = (TextView) headerResult.getView().findViewById(R.id.material_drawer_account_header_name);
         TextView Email = (TextView) headerResult.getView().findViewById(R.id.material_drawer_account_header_name);
-        int greenColorValue = Color.parseColor("#00ff00");
-        Name.setTextColor(greenColorValue);
-        Email.setTextColor(greenColorValue);
 
     }
 

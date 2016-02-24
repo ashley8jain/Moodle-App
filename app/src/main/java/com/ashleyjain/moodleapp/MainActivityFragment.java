@@ -72,12 +72,9 @@ public class MainActivityFragment extends Fragment {
     public class myRecyleAdapter extends RecyclerView.Adapter<myRecyleAdapter.myViewHolder>{
 
         private ArrayList<courseObj> stringList;
-        private String courseJSONstring;
-        private Bundle bundle = new Bundle();
 
         public myRecyleAdapter(ArrayList<courseObj> list){
             this.stringList = list;
-            this.courseJSONstring = courselist_JSONstring;
         }
 
         @Override
@@ -88,7 +85,6 @@ public class MainActivityFragment extends Fragment {
         @Override
         public void onBindViewHolder(myViewHolder vHolder,int i){
             courseObj Obj = stringList.get(i);
-            //System.out.println("<<<<<-----------the course is "+ Obj.getCode() +"------------------>>>>>>>");
             vHolder.notxtDisplay.setText(Obj.getCode());
             vHolder.nameTxtDisplay.setText(Obj.getName());
         }
@@ -96,9 +92,8 @@ public class MainActivityFragment extends Fragment {
         @Override
         public myViewHolder onCreateViewHolder(ViewGroup viewGroup, int i){
             View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_view, viewGroup, false);
-            myViewHolder vHolder =  new myViewHolder(itemView);
-            vHolder.setI(stringList.get(i).getCode());
-            return vHolder;
+
+            return new myViewHolder(itemView,stringList.get(i).getCode());
         }
 
         public class myViewHolder extends RecyclerView.ViewHolder{
@@ -106,11 +101,7 @@ public class MainActivityFragment extends Fragment {
             private TextView notxtDisplay;
             private TextView nameTxtDisplay;
 
-            public void setI(String cCode){
-                bundle.putString("cCode",cCode);
-            }
-
-            public myViewHolder(View view){
+            public myViewHolder(View view, final String cCode){
                 super(view);
                 notxtDisplay = (TextView)view.findViewById(R.id.courseNo);
                 nameTxtDisplay = (TextView)view.findViewById(R.id.courseName);
@@ -118,6 +109,9 @@ public class MainActivityFragment extends Fragment {
 
                     @Override
                     public void onClick(View v) {
+                        TextView textView = (TextView) v.findViewById(R.id.courseNo);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("cCode",textView.getText().toString());
                         Fragment courseFrag = new CourseFragment();
                         courseFrag.setArguments(bundle);
                         FragmentChangeListener frChgListener = (FragmentChangeListener)getActivity();

@@ -1,16 +1,12 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 
@@ -55,19 +51,30 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.notification:
-                Fragment notifFragment = new NotificationFragment();
-                Bundle bundle = new Bundle();
-                Boolean IsNotif = false;
-                if(notJSON!=null){
-                    bundle.putString("notJSON", notJSON);
-                    IsNotif = true;
-                }
-                bundle.putBoolean("IsNotif",IsNotif);
-                notifFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
-                        .addToBackStack(notifFragment.toString())
-                        .commit();
+                String url3 = "http://"+ ((myApplication) getApplication()).getLocalHost()+"/default/notifications.json";
+                final ProgressDialog dialog1 = ProgressDialog.show(this, "", "Fetching Details...", true);
+                GETrequest.response(new GETrequest.VolleyCallback() {
+                    @Override
+                    public void onSuccess(String notResult) {
+                        System.out.println(notResult);
+                        notJSON = notResult;
+                        if( !((getSupportFragmentManager().findFragmentById(R.id.fragment_container)) instanceof NotificationFragment) ){
+                            Fragment notifFragment = new NotificationFragment();
+                            Bundle bundle = new Bundle();
+                            Boolean IsNotif = false;
+                            if(notJSON!=null){
+                                bundle.putString("notJSON", notJSON);
+                                IsNotif = true;
+                            }
+                            bundle.putBoolean("IsNotif",IsNotif);
+                            notifFragment.setArguments(bundle);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
+                                    .addToBackStack(notifFragment.toString())
+                                    .commit();
+                        }
+                    }
+                },this , url3, dialog1);
                 return true;
             case R.id.material_drawer_switch:
                 drawer.openDrawer();
@@ -121,7 +128,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
 
         toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
@@ -141,16 +148,6 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
             e.printStackTrace();
         }
 
-        notJSON = intent.getStringExtra("notJSON");
-        try {
-                JSONObject jsonObject = new JSONObject(notJSON);
-                JSONArray notif_array = jsonObject.getJSONArray("notifications");
-                int no_of_notifs = notif_array.length();
-        }
-        catch (NullPointerException | JSONException e) {
-            e.printStackTrace();
-        }
-
         Toast.makeText(this, "Welcome on Moodle+ " + name + "!!", Toast.LENGTH_LONG).show();
 
         Bundle bundle = new Bundle();
@@ -167,6 +164,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 .addProfiles(
                         new ProfileDrawerItem().withName(name).withEmail(email)
                 )
+                .withHeaderBackground(R.drawable.iit_delhi)
                 .withProfileImagesClickable(true)
                 .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
 
@@ -202,7 +200,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                         new SectionDrawerItem().withName("My courses"));
         for (int i = 0; i < coursearray.length(); i++) {
             builder.addDrawerItems(
-                    new PrimaryDrawerItem().withName(cCodeArray.get(i)).withIdentifier(4+i)
+                    new PrimaryDrawerItem().withName(cCodeArray.get(i).toUpperCase()).withIdentifier(4+i)
             );
         }
         builder.withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -212,7 +210,20 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 switch (position) {
                     default:
                         if (position == 1) {
-
+                            Fragment notifFragment = new NotificationFragment();
+                            Bundle bundle = new Bundle();
+                            Boolean IsNotif = false;
+                            if(notJSON!=null){
+                                bundle.putString("notJSON", notJSON);
+                                IsNotif = true;
+                            }
+                            bundle.putBoolean("IsNotif",IsNotif);
+                            notifFragment.setArguments(bundle);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, notifFragment, notifFragment.toString())
+                                    .addToBackStack(notifFragment.toString())
+                                    .commit();
+                            return true;
                         }
                         else
                         if (position == 2) {
@@ -233,7 +244,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                             }, context, url2, dialog1);
                         }
                         else if (position == 3) {
-                            Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
+
                         }
                         else {
                             courseB.putString("cCode", cCodeArray.get(position - 5));

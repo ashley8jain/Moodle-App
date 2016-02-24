@@ -2,22 +2,12 @@ package com.ashleyjain.moodleapp;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Handler;
-
-import android.support.v4.app.Fragment;
-
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-
-import android.util.Log;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,7 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ashleyjain.moodleapp.items.ProfileDetail;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -175,6 +164,17 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean current) {
                         Toast.makeText(getApplicationContext(), "Log Out", Toast.LENGTH_LONG).show();
+                        final ProgressDialog dialog2 = ProgressDialog.show(context, "", "Loading.Please wait...", true);
+
+                                  String url = "http://"+ ((myApplication) getApplication()).getLocalHost() +"/default/logout.json";
+                                   GETrequest.response(new GETrequest.VolleyCallback() {
+                                       @Override
+                                       public void onSuccess(String result) {
+                                           dialog2.dismiss();
+                                           System.out.println(result);
+                                           finish();
+                                       }
+                                   }, context, url, dialog2);
                         return false;
                     }
                 })

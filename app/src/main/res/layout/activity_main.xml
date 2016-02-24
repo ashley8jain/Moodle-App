@@ -50,7 +50,6 @@
         android:background="@color/colorPrimaryLight"
         android:padding="10dp"
         android:id="@+id/userid"
-        android:text="vinay"
         android:hint="Username"
         android:textColorHint="@color/colorAccent"
         android:layout_margin="10dp"/>
@@ -64,7 +63,6 @@
         android:padding="10dp"
         android:ems="10"
         android:textColorHint="@color/colorAccent"
-        android:text="vinay"
         android:id="@+id/password"
         android:hint="Password"/>
     </LinearLayout>

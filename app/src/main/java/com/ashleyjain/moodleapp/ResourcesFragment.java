@@ -1,5 +1,6 @@
 package com.ashleyjain.moodleapp;
 
+import android.content.ActivityNotFoundException;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,13 +20,14 @@ import android.widget.Toast;
  */
 public class ResourcesFragment extends Fragment {
     final int PICKFILE_RESULT_CODE = 0;
+    private static final int FILE_SELECT_CODE = 0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_course_resources, container, false);
     }
-    @Override
+   @Override
     public void onStart() {
         super.onStart();
         final View view = getView();
@@ -36,8 +38,8 @@ public class ResourcesFragment extends Fragment {
             public void onClick(View v) {
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent,PICKFILE_RESULT_CODE);
+                intent.setType("images/*");
+                startActivityForResult(intent, PICKFILE_RESULT_CODE);
             }
         });
 
@@ -45,7 +47,7 @@ public class ResourcesFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
     {
-        if (requestCode == PICKFILE_RESULT_CODE)
+        if (requestCode == PICKFILE_RESULT_CODE&& intent != null && intent.getData() != null)
         {
 
             Uri uri = intent.getData();
@@ -57,7 +59,8 @@ public class ResourcesFragment extends Fragment {
                 {
                     int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);//Instead of "MediaStore.Images.Media.DATA" can be used "_data"
                     Uri filePathUri = Uri.parse(cursor.getString(column_index));
-                    String file_name = filePathUri.getLastPathSegment().toString();
+                    String file_name = getContext().getContentResolver().getType(uri);
+
                     EditText filename = (EditText)getView().findViewById(R.id.filename);
                     filename.setText(file_name, TextView.BufferType.EDITABLE);
                     String file_path=filePathUri.getPath();
@@ -71,3 +74,4 @@ public class ResourcesFragment extends Fragment {
         }
     }
 }
+

@@ -33,25 +33,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Submit"
-        android:id="@+id/button2"
+        android:id="@+id/submit"
         android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="#FFFFFF"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="browse"
+        android:text="Browse"
         android:layout_marginBottom="20dp"
-        android:id="@+id/button3"
-        android:layout_above="@+id/button2"
+        android:id="@+id/browse"
+        android:layout_above="@+id/submit"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="#FFFFFF"
         android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="300dp"
         android:layout_height="40dp"
         android:id="@+id/editText"
-        android:layout_above="@+id/button3"
+        android:layout_above="@+id/browse"
         android:layout_marginBottom="30dp"
         android:background="@drawable/borders"
         android:hint="file path"

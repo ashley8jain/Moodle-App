@@ -3,6 +3,7 @@ package com.ashleyjain.moodleapp;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
@@ -14,10 +15,12 @@ import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -26,6 +29,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
@@ -161,18 +165,21 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                                     .add(R.id.fragment_container, fragment)
                                     //.addToBackStack("toMainFragment")
                                     .commit();
-
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
                 .addProfiles(
-                        new ProfileDrawerItem().withName(name).withEmail(email)
+                        new ProfileDrawerItem().withName(name).withEmail(email),
+                        new ProfileSettingDrawerItem()
+                                .withName("Log Out")
+                                .withIcon(R.drawable.ic_notifications_black_24dp).withIdentifier(20)
                 )
                 .withProfileImagesClickable(true)
                 .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
 
                     @Override
                     public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
-                        Toast.makeText(getApplicationContext(), "Click me hoss", Toast.LENGTH_LONG).show();
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        replaceFragment(profileFragment);
                         return false;
                     }
 
@@ -184,6 +191,13 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean current) {
+                        Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
                         return false;
                     }
                 })
@@ -212,7 +226,8 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 switch (position) {
                     default:
                         if (position == 1) {
-
+                            MainOverview overview = new MainOverview();
+                            replaceFragment(overview);
                         }
                         else
                         if (position == 2) {
@@ -235,9 +250,13 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                         else if (position == 3) {
                             Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
                         }
+                        else if(drawerItem.getIdentifier() == 100001){
+                            Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
+                        }
                         else {
                             courseB.putString("cCode", cCodeArray.get(position - 5));
                             CourseFragment coursefragment = new CourseFragment();
+                            Toast.makeText(getApplicationContext(), Integer.toString(position) , Toast.LENGTH_LONG).show();
                             coursefragment.setArguments(courseB);
                             replaceFragment(coursefragment);
                         }
@@ -246,6 +265,12 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
             return false;
         }});
         drawer = builder.build();
+        TextView Name = (TextView) headerResult.getView().findViewById(R.id.material_drawer_account_header_name);
+        TextView Email = (TextView) headerResult.getView().findViewById(R.id.material_drawer_account_header_name);
+        int greenColorValue = Color.parseColor("#00ff00");
+        Name.setTextColor(greenColorValue);
+        Email.setTextColor(greenColorValue);
+
     }
 
     public void replaceFragment(Fragment courseFrag){

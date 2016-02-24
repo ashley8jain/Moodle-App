@@ -26,6 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Browse"
+            android:backgroundTint="@color/colorAccent"
+            android:textColor="#FFFFFF"
             android:id="@+id/attachment"
             android:layout_margin="10dp"
             android:onClick="attachment"/>
@@ -36,6 +38,8 @@
         android:id="@+id/submit"
         android:onClick="submit"
         android:text="Submit"
+        android:backgroundTint="@color/colorAccent"
+        android:textColor="#FFFFFF"
         android:layout_marginLeft="40dp"/>
 
 </LinearLayout>

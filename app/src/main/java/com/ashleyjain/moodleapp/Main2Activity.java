@@ -1,25 +1,19 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ashleyjain.moodleapp.items.ProfileDetail;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -43,6 +37,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
     protected AccountHeader headerResult= null;
     String notJSON;
     Toolbar toolbar;
+    Context context = Main2Activity.this;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,39 +74,6 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 return super.onOptionsItemSelected(item);
         }
     }
-/*
-    boolean doubleBackToExitPressedOnce = false;
-
-    @Override
-    public void onBackPressed() {
-
-        int count = getFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) {
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 1000);
-            super.onBackPressed();
-            //additional code
-        }
-        else {
-            super.onBackPressed();
-        }
-    }
-*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,8 +86,11 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        String email = intent.getStringExtra("email");
+        final String name = intent.getStringExtra("name");
+        final String email = intent.getStringExtra("email");
+        final String username = intent.getStringExtra("username");
+        final String entryno2 = intent.getStringExtra("entry_no");
+        final String type = intent.getStringExtra("type_");
 
         final String courselist_response = intent.getStringExtra("courses");
         final ArrayList<String> cCodeArray = new ArrayList<String>();
@@ -172,7 +137,14 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
 
                     @Override
                     public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
-                        Toast.makeText(getApplicationContext(), "Click me hoss", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "1.Fullname, 2.Email, 3.Username, 4.Entry No, 5.Type", Toast.LENGTH_LONG).show();
+                        Intent intent2 = new Intent(context, ProfileDetail.class);
+                        intent2.putExtra("fullname",name);
+                        intent2.putExtra("email",email);
+                        intent2.putExtra("username",username);
+                        intent2.putExtra("type_",type);
+                        intent2.putExtra("entry_no",entryno2);
+                        startActivity(intent2);
                         return false;
                     }
 
@@ -241,6 +213,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                             coursefragment.setArguments(courseB);
                             replaceFragment(coursefragment);
                         }
+
                         break;
                 }
             return false;

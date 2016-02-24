@@ -18,26 +18,26 @@ import java.util.List;
  */
 public class ThreadsCustomAdapter extends BaseAdapter {
     Context context;
-    List<AssignmentItems> assignmentItem;
+    List<AssignmentItems> threadsItem;
     public ThreadsCustomAdapter(Context context, List<AssignmentItems> assignmentItem) {
         this.context = context;
-        this.assignmentItem = assignmentItem;
+        this.threadsItem = assignmentItem;
 
     }
 
     @Override
     public int getCount() {
-        return assignmentItem.size();
+        return threadsItem.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return assignmentItem.get(position);
+        return threadsItem.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return assignmentItem.indexOf(getItem(position));
+        return threadsItem.indexOf(getItem(position));
     }
 
     @Override
@@ -45,16 +45,15 @@ public class ThreadsCustomAdapter extends BaseAdapter {
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context
                     .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.assignment_list_item, null);
+            convertView = mInflater.inflate(R.layout.thread_list_item, null);
         }
 
-        TextView assignmentName = (TextView) convertView.findViewById(R.id.assignment_name);
-        TextView assignmentTime = (TextView) convertView.findViewById(R.id.assignment_time);
+        TextView titleName = (TextView) convertView.findViewById(R.id.title_name);
+        TextView UpdatedOn = (TextView) convertView.findViewById(R.id.updated_on);
 
-        AssignmentItems assign_row = assignmentItem.get(position);
-        // setting the image resource and title
-        assignmentTime.setText(assign_row.getAssignmenttime());
-        assignmentName.setText(assign_row.getAssignmentname());
+        AssignmentItems assign_row = threadsItem.get(position);
+        UpdatedOn.setText(assign_row.getAssignmenttime());
+        titleName.setText(assign_row.getAssignmentname());
 
         return convertView;
     }

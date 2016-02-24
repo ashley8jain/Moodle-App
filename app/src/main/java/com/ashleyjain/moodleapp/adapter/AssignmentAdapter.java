@@ -1,7 +1,8 @@
 package com.ashleyjain.moodleapp.adapter;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class AssignmentAdapter extends Fragment {
         dead = (TextView) getActivity().findViewById(R.id.deadline);
 
         name.setText(getArguments().getString("name"));
-        desc.setText(getArguments().getString("description"));
+        desc.setText(Html.fromHtml(getArguments().getString("description")));
         dead.setText("Deadline:"+getArguments().getString("deadline"));
     }
 

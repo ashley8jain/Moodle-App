@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((myApplication) this.getApplication()).setLocalHost("10.192.49.56:8000");
+
+        ((myApplication) this.getApplication()).setLocalHost("10.192.38.186:8000");
+
 
         final Context context = MainActivity.this;
         super.onCreate(savedInstanceState);
@@ -115,15 +117,6 @@ public class MainActivity extends AppCompatActivity {
                                                     final String type = user.getString("type_");
                                                     //final String  = user.getString();
                                                     final Intent main2frag_intent = new Intent(context, Main2Activity.class);
-
-                                                    String url3 = "http://"+ ((myApplication) getApplication()).getLocalHost()+"/default/notifications.json";
-                                                    GETrequest.response(new GETrequest.VolleyCallback() {
-                                                        @Override
-                                                        public void onSuccess(String notResult) {
-                                                            System.out.println(notResult);
-                                                            main2frag_intent.putExtra("notJSON", notResult);
-                                                        }
-                                                    }, context, url3, dialog1);
 
                                                     GETrequest.response(new GETrequest.VolleyCallback() {
                                                         @Override

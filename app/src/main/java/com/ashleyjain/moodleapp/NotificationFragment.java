@@ -1,8 +1,10 @@
 package com.ashleyjain.moodleapp;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,69 +22,88 @@ import java.util.ArrayList;
 
 public class NotificationFragment extends Fragment{
 
-    ArrayList<notifObj> notifList = new ArrayList<notifObj>();
-    ArrayList<String> stringList = new ArrayList<String>();
-    Boolean IsNotif;
+    //ArrayList<notifObj> notifList = new ArrayList<notifObj>();
+    Boolean IsNotif = true;
+    private JSONArray notifsJSON;
+    private ListView listView;
 
     public NotificationFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle onSavedInstanceState){
+        super.onCreate(onSavedInstanceState);
+        try {
+            IsNotif = getArguments().getBoolean("IsNotif");
+            if(IsNotif){
+                JSONObject jsonObject = (new JSONObject(getArguments().getString("notJSON")));
+                notifsJSON = jsonObject.getJSONArray("notifications");
+            }
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
-        IsNotif = getArguments().getBoolean("IsNotif");
+        View view = inflater.inflate(R.layout.fragment_notification,container,false);
+        listView = (ListView) view.findViewById(R.id.notif_listView);
+
+        ArrayList<String> stringList = new ArrayList<String>();
         if(IsNotif) {
-            String notJSON = getArguments().getString("notJSON");
-            try {
-                JSONObject jsonObject = new JSONObject(notJSON);
-                JSONArray notif_array = jsonObject.getJSONArray("notifications");
-                for (int i = 0; i < notif_array.length(); i++) {
-                    JSONObject notif = notif_array.getJSONObject(i);
-                    String s = notif.getString("description");
-                    stringList.add(i, s);
-                    //notifList.add(i,nObj);
+            TextView tv = (TextView) view.findViewById(R.id.isNotif);
+            for (int i = 0; i < notifsJSON.length(); i++) {
+                try {
+                    JSONObject notif = notifsJSON.getJSONObject(i);
+                    stringList.add(new String(notif.getString("description")));
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+            tv.setText(String.format("You have %d notifications", stringList.size()));
+            customAdapter adapter = new customAdapter(inflater.getContext(), stringList);
+            listView.setAdapter(adapter);
+        }
+        else{
+            TextView tv = (TextView) view.findViewById(R.id.isNotif);
+            tv.setText("You have 0 notifications");
         }
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        if(IsNotif) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, stringList);
-            TextView tv = (TextView) getView().findViewById(R.id.isNotif);
-            tv.setText( String.format("You have %d notifications",stringList.size()) );
-            ListView listView = ((ListView) getView().findViewById(R.id.notif_listView));
-            listView.setAdapter(adapter);
-        }
-        else{
-            TextView tv = (TextView) getView().findViewById(R.id.isNotif);
-            tv.setText("You have 0 notifications");
-        }
-    }
-
-    /*private class customAdapter extends ArrayAdapter<String>{
-
-        customAdapter(Context context, int resource,
-                      int textViewResourceId, String[] array){
-            super( context,resource,textViewResourceId, array);
+    private class customAdapter extends ArrayAdapter<String> {
+        private View v;
+        private ArrayList<String> stringArrayList;
+        public customAdapter(Context context,ArrayList<String> sList){
+            super(context, android.R.layout.simple_list_item_1);
+            stringArrayList = sList;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent){
-            View view = super.getView(position, convertView, parent);
-            TextView textView = view.findViewById(R.layout.simple_list_item_1);
+        public int getCount() {
+            return stringArrayList.size();
         }
 
-    }*/
+        @Override
+        public String getItem(int position) {
+            return stringArrayList.get(position);
+        }
+
+        @Override
+        public View getView(int pos, View convertView, ViewGroup parent){
+            System.out.println("<<<<<<<---------------------hi------------------->>>>>>>>>>>>>>>>>>>>>>>>");
+
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                v= inflater.inflate(android.R.layout.simple_list_item_1, null);
+                TextView tv = (TextView) v.findViewById(android.R.id.text1);
+                tv.setText(Html.fromHtml(stringArrayList.get(pos)));
+            return v;
+        }
+    }
 
 
 }

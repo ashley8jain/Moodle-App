@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String SET_COOKIE_KEY = "set-cookie";
     private static final String COOKIE_KEY = "cookie";
     private static final String SESSION_COOKIE = "session_id_moodleplus";
-
     private static MainActivity _instance;
     private RequestQueue _requestQueue;
     private SharedPreferences _preferences;
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                     GETrequest.response(new GETrequest.VolleyCallback() {
                         @Override
                         public void onSuccess(String result) {
-                                            dialog.dismiss();
                                             try {
 
                                                 JSONObject jsonObject = new JSONObject(result);
@@ -112,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
                                                     final String fname = user.getString("first_name");
                                                     final String lname = user.getString("last_name");
                                                     final String email = user.getString("email");
+                                                    final String username = user.getString("username");
+                                                    final String entryn = user.getString("entry_no");
+                                                    final String type = user.getString("type_");
                                                     //final String  = user.getString();
                                                     final Intent main2frag_intent = new Intent(context, Main2Activity.class);
 
@@ -133,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
                                                             //Intent main2frag_intent = new Intent(context, Main2Activity.class);
                                                             main2frag_intent.putExtra("name", fname+" "+lname);
                                                             main2frag_intent.putExtra("email",email);
+                                                            main2frag_intent.putExtra("username", username);
+                                                            main2frag_intent.putExtra("type_",type);
+                                                            main2frag_intent.putExtra("entry_no",entryn);
                                                             main2frag_intent.putExtra("courses", result1);
                                                             startActivity(main2frag_intent);
                                                         }
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-///////////
+
 
     }
 
@@ -171,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
     }
+
+
+    //checking session cookie
     public final void checkSessionCookie(Map<String, String> headers) {
         if (headers.containsKey(SET_COOKIE_KEY)
                 && headers.get(SET_COOKIE_KEY).startsWith(SESSION_COOKIE)) {
@@ -207,5 +214,7 @@ public class MainActivity extends AppCompatActivity {
     public RequestQueue getRequestQueue() {
         return _requestQueue;
     }
+
+
 
 }

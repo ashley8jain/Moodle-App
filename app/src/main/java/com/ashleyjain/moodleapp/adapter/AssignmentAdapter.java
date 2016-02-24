@@ -4,9 +4,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ashleyjain.moodleapp.R;
+
 
 /**
  * Created by ashleyjain on 20/02/16.
@@ -90,7 +92,7 @@ public class AssignmentAdapter extends Fragment {
         dead = (TextView) getActivity().findViewById(R.id.deadline);
 
         name.setText(getArguments().getString("name"));
-        desc.setText(getArguments().getString("description"));
+        desc.setText(Html.fromHtml(getArguments().getString("description")));
         dead.setText("Deadline:"+getArguments().getString("deadline"));
     }
 

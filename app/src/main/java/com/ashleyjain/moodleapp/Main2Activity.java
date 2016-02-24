@@ -1,21 +1,21 @@
 package com.ashleyjain.moodleapp;
 
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+
 import android.content.Intent;
 import android.os.Bundle;
-
-import android.support.v7.app.ActionBar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 
 import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ashleyjain.moodleapp.items.ProfileDetail;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -47,6 +48,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
     protected AccountHeader headerResult= null;
     String notJSON;
     Toolbar toolbar;
+    Context context = Main2Activity.this;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,39 +85,6 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 return super.onOptionsItemSelected(item);
         }
     }
-/*
-    boolean doubleBackToExitPressedOnce = false;
-
-    @Override
-    public void onBackPressed() {
-
-        int count = getFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) {
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 1000);
-            super.onBackPressed();
-            //additional code
-        }
-        else {
-            super.onBackPressed();
-        }
-    }
-*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,8 +97,11 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        String email = intent.getStringExtra("email");
+        final String name = intent.getStringExtra("name");
+        final String email = intent.getStringExtra("email");
+        final String username = intent.getStringExtra("username");
+        final String entryno2 = intent.getStringExtra("entry_no");
+        final String type = intent.getStringExtra("type_");
 
         final String courselist_response = intent.getStringExtra("courses");
         final ArrayList<String> cCodeArray = new ArrayList<String>();
@@ -180,6 +152,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                     public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
                         ProfileFragment profileFragment = new ProfileFragment();
                         replaceFragment(profileFragment);
+
                         return false;
                     }
 
@@ -197,7 +170,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
                     public boolean onProfileChanged(View view, IProfile profile, boolean current) {
-                        Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Log Out", Toast.LENGTH_LONG).show();
                         return false;
                     }
                 })
@@ -250,9 +223,6 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                         else if (position == 3) {
                             Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
                         }
-                        else if(drawerItem.getIdentifier() == 100001){
-                            Toast.makeText(getApplicationContext(), "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
-                        }
                         else {
                             courseB.putString("cCode", cCodeArray.get(position - 5));
                             CourseFragment coursefragment = new CourseFragment();
@@ -260,6 +230,7 @@ public class Main2Activity extends AppCompatActivity implements FragmentChangeLi
                             coursefragment.setArguments(courseB);
                             replaceFragment(coursefragment);
                         }
+
                         break;
                 }
             return false;

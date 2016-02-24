@@ -1,10 +1,8 @@
 package com.ashleyjain.moodleapp;
 
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

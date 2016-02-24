@@ -1,14 +1,13 @@
 package com.ashleyjain.moodleapp;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.ashleyjain.moodleapp.adapter.AssignmentAdapter;
@@ -65,7 +64,7 @@ public class AssignmentFragment extends ListFragment {
                     assignmentItems.add(items);
                 }
                 adapter = new AssignmentCustomAdapter(getActivity(), assignmentItems);
-//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,assignName);
+///                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,assignName);
                 setListAdapter(adapter);
 
             }
@@ -76,7 +75,7 @@ public class AssignmentFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Bundle bundle = new Bundle();
-        Fragment fragment = new AssignmentAdapter();
+        AssignmentAdapter fragment = new AssignmentAdapter();
         bundle.putString("name" , assignName[position]);
         bundle.putString("deadline" , assignDeadline[position]);
         bundle.putString("description" , assignDescr[position]);

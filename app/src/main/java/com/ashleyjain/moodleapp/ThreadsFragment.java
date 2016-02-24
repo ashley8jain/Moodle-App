@@ -1,16 +1,16 @@
 package com.ashleyjain.moodleapp;
 
+import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
-import android.app.ProgressDialog;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 
-import com.ashleyjain.moodleapp.customAdapter.AssignmentCustomAdapter;
 import com.ashleyjain.moodleapp.customAdapter.ThreadsCustomAdapter;
 import com.ashleyjain.moodleapp.items.AssignmentItems;
 
@@ -27,17 +27,51 @@ import java.util.List;
 public class ThreadsFragment extends ListFragment {
     public String cCode;
     String[] title,updates,combined,descp;
-    private List<AssignmentItems> assignmentItems;
+    private List<AssignmentItems> threadsItem;
+    Button submit;
+    EditText tit,descript;
+    String newtitle,newdesc;
     ThreadsCustomAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_course_threads, container, false);
         cCode = getArguments().getString("cCode");
+        tit = (EditText) view.findViewById(R.id.tit);
+        descript = (EditText) view.findViewById(R.id.description2);
+        submit = (Button) view.findViewById(R.id.submit22);
+        jsonThread();
 
-        String url = "http://"+ ((myApplication) getActivity().getApplication()).getLocalHost() +"/courses/course.json/"+cCode+"/threads";
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newtitle = tit.getText().toString();
+                newdesc = descript.getText().toString();
+                String url2 = "http://" + ((myApplication) getActivity().getApplication()).getLocalHost() + "/threads/new.json?title=" + newtitle + "&description=" + newdesc + "&course_code=" + cCode;
+                final ProgressDialog dialog2 = ProgressDialog.show(getActivity(), "", "Loading.Please wait...", true);
+                GETrequest.response(new GETrequest.VolleyCallback() {
+                    @Override
+                    public void onSuccess(final String result) {
+                        //dialog.dismiss();
+                        try {
+                            JSONObject jsonObject = new JSONObject(result);
+                            jsonThread();
 
-        final ProgressDialog dialog = ProgressDialog.show(getActivity(),"", "Loading.Please wait...", true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, getActivity(), url2, dialog2);
+            }
+        });
+        return view;
+    }
+
+    private void jsonThread() {
+        String url = "http://" + ((myApplication) getActivity().getApplication()).getLocalHost() + "/courses/course.json/" + cCode + "/threads";
+        final ProgressDialog dialog = ProgressDialog.show(getActivity(), "", "Loading.Please wait...", true);
         GETrequest.response(new GETrequest.VolleyCallback() {
             @Override
             public void onSuccess(final String result) {
@@ -54,45 +88,25 @@ public class ThreadsFragment extends ListFragment {
                         title[i] = ass.getString("title");
                         updates[i] = ass.getString("updated_at");
                         descp[i] = ass.getString("description");
-                        combined[i]=title[i]+" ---> "+descp[i];
+                        combined[i] = Character.toUpperCase(title[i].charAt(0))+title[i].substring(1) + " => Description: " + descp[i];
+                        //Character.toUpperCase(input.charAt(0)) + input.substring(1);
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                assignmentItems = new ArrayList<AssignmentItems>();
+                threadsItem = new ArrayList<AssignmentItems>();
 
                 for (int i = 0; i < title.length; i++) {
-                    AssignmentItems items = new AssignmentItems(combined[i],updates[i] );
+                    AssignmentItems items = new AssignmentItems(combined[i], updates[i]);
 
-                    assignmentItems.add(items);
+                    threadsItem.add(items);
                 }
-                adapter = new ThreadsCustomAdapter(getActivity(), assignmentItems);
+                adapter = new ThreadsCustomAdapter(getActivity(), threadsItem);
                 setListAdapter(adapter);
             }
         }, getActivity(), url, dialog);
-        return inflater.inflate(R.layout.fragment_course_threads, container, false);
     }
-    /*@Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        Bundle bundle = new Bundle();
-        //Fragment fragment = new threadAdapter();
-        String url = MainActivity.localhost+"/threads/thread.json/"+Integer.toString(position);
-        final String[] json = new String[1];
-        final ProgressDialog dialog = ProgressDialog.show(getActivity(),"", "Loading.Please wait...", true);
-        GETrequest.response(new GETrequest.VolleyCallback() {
-            @Override
-            public void onSuccess(final String result) {
-                //dialog.dismiss();
-                json[0] =result;
-            }
-        }, getActivity(), url, dialog);
-        bundle.putString("particularthreadjson", json[0]);
-        fragment.setArguments(bundle);
-        replaceFragment(fragment);
-
-    }*/
 
     public void replaceFragment(Fragment courseFrag){
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -100,4 +114,7 @@ public class ThreadsFragment extends ListFragment {
         fragmentTransaction.addToBackStack(courseFrag.toString());
         fragmentTransaction.commit();
     }
+
 }
+
+

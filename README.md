@@ -6,7 +6,19 @@ This app allow student to view all grades course list,uploading assignments and 
 
 ---
 
+## Screenshots
 
+  <table>
+    <tr>
+     <td><img src="doc/login.png"></td>
+     <td><img src="doc/mycourses.png"></td>
+     <td><img src="doc/drawer.png"></td>
+    <tr> 
+      <td><img src="doc/grades.png"></td>
+      <td><img src="doc/notifications.png"></td>
+      <td><img src="doc/threads.png"></td>
+    </tr>
+  </table>
   
 ---
 

@@ -1,4 +1,4 @@
-# Moodle App
+# Moodle App <a href='https://play.google.com/store/apps/details?id=com.moodle.moodlemobile&hl=en' target='_blank' align="right"><img align="right" height='36' src='https://s20.postimg.org/muzx3w4jh/google_play_badge.png' /></a>
 
 This app allow student to view all grades course list,uploading assignments and course discussion room.
 
